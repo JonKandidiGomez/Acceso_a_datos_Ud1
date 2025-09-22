@@ -1,43 +1,30 @@
 import java.io.*;
 
 public class Ej10_LeerFichAleatorio {
-    public static void main(String[] args) {
-        String fileName = "empleados.dat";
-        final int RECORD_SIZE = 36; // tamaño fijo del registro
+    public static void main(String[] args) throws IOException {
+        final int TAM_REGISTRO = 36;
+        File emp = new File("empleados.dat");
+        RandomAccessFile file = new RandomAccessFile(emp, "r");
+        long pos = 0;
 
-        try (RandomAccessFile file = new RandomAccessFile(fileName, "r")) {
-            long fileLength = file.length();
-            long pos = 0;
+        while (pos < file.length()) {
+            file.seek(pos);
 
-            while (pos < fileLength) {
-                file.seek(pos); // Posicionarse en el inicio del registro
+            int id = file.readInt();
 
-                // Leer ID
-                int id = file.readInt();
-
-                // Leer apellido (10 caracteres = 20 bytes)
-                StringBuilder apellidoBuilder = new StringBuilder();
-                for (int i = 0; i < 10; i++) {
-                    char c = file.readChar(); // 2 bytes por carácter
-                    apellidoBuilder.append(c);
-                }
-                String apellido = apellidoBuilder.toString().trim();
-
-                // Leer departamento
-                int departamento = file.readInt();
-
-                // Leer salario
-                double salario = file.readDouble();
-
-                // Mostrar datos
-                System.out.printf("ID: %d | Apellido: %-10s | Departamento: %d | Salario: %.2f%n",
-                        id, apellido, departamento, salario);
-
-                pos += RECORD_SIZE; // Avanzar al siguiente registro
+            StringBuilder apellidoBuilder = new StringBuilder();
+            for (int i = 0; i < 10; i++) {
+                char c = file.readChar();
+                apellidoBuilder.append(c);
             }
+            String apellido = apellidoBuilder.toString().trim();
+            int departamento = file.readInt();
+            double salario = file.readDouble();
+            System.out.printf("ID: %d | Apellido: %-10s | Departamento: %d | Salario: %.2f%n",
+                    id, apellido, departamento, salario);
 
-        } catch (IOException e) {
-            System.err.println("Error al leer el archivo: " + e.getMessage());
+            pos += TAM_REGISTRO;
         }
+        file.close();
     }
 }
